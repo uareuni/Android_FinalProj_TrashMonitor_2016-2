@@ -14,7 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import info.androidhive.materialtabs.R;
-import info.androidhive.materialtabs.fragments.TwoFragment;
+import info.androidhive.materialtabs.fragments.UserHistoryFragment;
 import info.androidhive.materialtabs.fragments.UserTrashFragment;
 
 public class CleanerActivity extends AppCompatActivity {
@@ -60,7 +60,7 @@ public class CleanerActivity extends AppCompatActivity {
     private void setupViewPager(ViewPager viewPager) {
         ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager());
         adapter.addFrag(new UserTrashFragment(), "ONE");
-        adapter.addFrag(new TwoFragment(), "TWO");
+        adapter.addFrag(new UserHistoryFragment(), "TWO");
         viewPager.setAdapter(adapter);
     }
 

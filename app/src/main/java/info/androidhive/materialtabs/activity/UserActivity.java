@@ -1,5 +1,8 @@
 package info.androidhive.materialtabs.activity;
 
+import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
@@ -7,22 +10,32 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
+
+import com.baoyz.swipemenulistview.SwipeMenu;
+import com.baoyz.swipemenulistview.SwipeMenuCreator;
+import com.baoyz.swipemenulistview.SwipeMenuItem;
+import com.baoyz.swipemenulistview.SwipeMenuListView;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import info.androidhive.materialtabs.R;
+import info.androidhive.materialtabs.db.DBAdapter;
+import info.androidhive.materialtabs.db.ListDbHelper;
+import info.androidhive.materialtabs.db.ListItem;
+import info.androidhive.materialtabs.fragments.UserHistoryFragment;
 import info.androidhive.materialtabs.fragments.UserTrashFragment;
-import info.androidhive.materialtabs.fragments.TwoFragment;
 
 public class UserActivity extends AppCompatActivity {
 
+    //---------- UserActivity -----------//
     private TabLayout tabLayout;
     private ViewPager viewPager;
-
 
     TextView textTotal;
     TextView text100L;
@@ -32,6 +45,11 @@ public class UserActivity extends AppCompatActivity {
     private int count100L;
     private int count50L;
     private int count10L;
+
+
+
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,12 +93,15 @@ public class UserActivity extends AppCompatActivity {
     private void setupViewPager(ViewPager viewPager) {
         ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager());
         adapter.addFrag(new UserTrashFragment(), "ONE");
-        adapter.addFrag(new TwoFragment(), "TWO");
+        adapter.addFrag(new UserHistoryFragment(), "TWO");
         viewPager.setAdapter(adapter);
     }
 
 
-    ////////////////////////////////////??????????????????????????????????//////////////////////////////////////
+    /**
+     * for UserTrashFragment
+     * @param v
+     */
     public void onCountBtnClicked(View v)
     {
         switch (v.getId())
@@ -115,7 +136,21 @@ public class UserActivity extends AppCompatActivity {
     {
         return (count100L * 100) + (count50L * 50) + (count10L * 10);
     }
-    ////////////////////////////////////??????????????????????????????????//////////////////////////////////////
+
+
+
+    /**
+     *  for UserHistoryFragment -------------------------------------------------
+     */
+
+
+
+
+
+
+
+
+
 
 
     class ViewPagerAdapter extends FragmentPagerAdapter {

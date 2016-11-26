@@ -26,6 +26,8 @@ public class UserTrashFragment extends Fragment implements View.OnClickListener
     Button minus50L;
     Button minus10L;
 
+    Button uploadBtn;
+
     private int count100L;
     private int count50L;
     private int count10L;
@@ -45,6 +47,8 @@ public class UserTrashFragment extends Fragment implements View.OnClickListener
         //View view = inflater.inflate(R.layout.user_trash, container, false);
         View view = inflater.inflate(R.layout.user_trash, null);
 
+        uploadBtn = (Button) view.findViewById(R.id.uploadBtn);
+
         textTotal = (TextView) view.findViewById(R.id.textTotal);
         text100L = (TextView) view.findViewById(R.id.text100L);
         text50L = (TextView) view.findViewById(R.id.text50L);
@@ -56,6 +60,8 @@ public class UserTrashFragment extends Fragment implements View.OnClickListener
         minus100L = (Button) view.findViewById(R.id.minus100L);
         minus50L = (Button) view.findViewById(R.id.minus50L);
         minus10L = (Button) view.findViewById(R.id.minus10L);
+
+        uploadBtn.setOnClickListener(this);
 
         plus100L.setOnClickListener(this);
         plus50L.setOnClickListener(this);
@@ -97,6 +103,13 @@ public class UserTrashFragment extends Fragment implements View.OnClickListener
                 if((count10L > 0) && (getTotal() > 0))
                 {
                     text10L.setText("" + (--count10L));
+                }
+                break;
+
+            case R.id.uploadBtn :
+                if((count10L != 0) || (count50L != 0) || (count100L != 0))
+                {
+                    UserHistoryFragment.setListData("title", "1");
                 }
                 break;
         }
