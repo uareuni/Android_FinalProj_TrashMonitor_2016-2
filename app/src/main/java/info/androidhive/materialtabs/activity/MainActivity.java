@@ -15,10 +15,10 @@ import java.util.regex.Pattern;
 
 import info.androidhive.materialtabs.R;
 
+
 public class MainActivity extends AppCompatActivity {
 
     private Toolbar toolbar;
-
     private Button signupBtn;
     private Button signinBtn;
     private RadioButton userBtn;
@@ -46,8 +46,14 @@ public class MainActivity extends AppCompatActivity {
         // 회원가입
         signupBtn.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
+            public void onClick(View v)
+            {
                 // 회원가입 Activity로 이동!
+                Intent intent = new Intent(getApplicationContext(), SignupActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(intent);
+                finish();
             }
         });
 
@@ -58,20 +64,23 @@ public class MainActivity extends AppCompatActivity {
                 // 1. login 유효성 조사
                 if(isAvailableLogin())
                 {
+                    Intent intent;
                     // 2. 사용자, 청소부 조사
                     if(userBtn.isChecked())
                     {
-                        Intent intent = new Intent(getApplicationContext(), UserActivity.class);
+                        intent = new Intent(getApplicationContext(), UserActivity.class);
                         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        intent.putExtra("from", "UserActivity");
                         startActivity(intent);
                         finish();
 
                     }else if(cleanerBtn.isChecked())
                     {
-                        Intent intent = new Intent(getApplicationContext(), UserActivity.class);
+                        intent = new Intent(getApplicationContext(), CleanerActivity.class);
                         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        intent.putExtra("from", "CleanerActivity");
                         startActivity(intent);
                         finish();
                     }else

@@ -16,9 +16,12 @@ import com.baoyz.swipemenulistview.SwipeMenuCreator;
 import com.baoyz.swipemenulistview.SwipeMenuItem;
 
 import info.androidhive.materialtabs.R;
+import info.androidhive.materialtabs.db.BasicInfo;
 import info.androidhive.materialtabs.db.DBAdapter;
 import info.androidhive.materialtabs.db.ListDbHelper;
 import info.androidhive.materialtabs.db.ListItem;
+
+
 
 
 public class UserHistoryFragment extends android.support.v4.app.Fragment
@@ -28,11 +31,8 @@ public class UserHistoryFragment extends android.support.v4.app.Fragment
     SQLiteDatabase db;
 
     ListView mListView;
-    SwipeMenuCreator creator;
 
     static DBAdapter mAdapter;
-
-
 
     public UserHistoryFragment() {
         // Required empty public constructor
@@ -42,7 +42,6 @@ public class UserHistoryFragment extends android.support.v4.app.Fragment
     public void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
-
     }
 
     @Override
@@ -51,21 +50,31 @@ public class UserHistoryFragment extends android.support.v4.app.Fragment
         View view = inflater.inflate(R.layout.user_list, null);
 
 
-        mListView = (ListView) view.findViewById(R.id.listView);
+
+        mListView = (ListView) view.findViewById(R.id.userListView);
 
 
 // -------------------------------- db open하고 CursorAdapter 초기화 -------------------------------------
-        helper = new ListDbHelper(container.getContext(), "ListDB", null, 1);
+        helper = new ListDbHelper(container.getContext(), BasicInfo.USER_DB, null, 1);
         db = helper.getWritableDatabase(); //db open!
 
-        String SELECT_SQL = "SELECT * FROM " + "ListTable";
+        /**
+         *  for testing - dropTable
+         */
+        // helper.dropTable(db, BasicInfo.USER_TABLE);
+
+        // 1. create table
+        helper.createTable(db, BasicInfo.USER_TABLE);
+
+        // 2. select
+        String SELECT_SQL = "SELECT * FROM " + BasicInfo.USER_TABLE;
 
         /**
          *  CursorAdapter의 인자로 보낼 Cursor객체.
          */
         Cursor cursor = db.rawQuery(SELECT_SQL, null);
 
-        mAdapter = new DBAdapter(container.getContext(), cursor, true);
+        mAdapter = new DBAdapter(container.getContext(), cursor, true, BasicInfo.USER_DB);
 // ----------------------------------------------------------------------------------------------------
 
 
@@ -74,67 +83,24 @@ public class UserHistoryFragment extends android.support.v4.app.Fragment
 
         return view;
 
-
     }
 
-
-
-
-//////////ffff////////////////////////////////////////////////////////////////////////////////
-    public static void setListData(String title, String date)
+    /////////////////////////////////////////////////////////////////////////////////////////
+    public static void setListData(String title, String address, String trash)
     {
-        ListItem aItem = new ListItem(title, date);
+        ListItem aItem = new ListItem(title, address, trash);
         mAdapter.addItemToDb(aItem);
 
+        mAdapter.notifyDataSetChanged();
     }
 
+    /*
     private void deleteAll()
     {
         mAdapter.removeAllItem();
     }
-
-    private void initCreator()
-    {
-        creator = new SwipeMenuCreator() {
-
-            @Override
-            public void create(SwipeMenu menu) {
-                // create "open" item
-                SwipeMenuItem openItem = new SwipeMenuItem(getContext());
-                // set item background
-                openItem.setBackground(new ColorDrawable(Color.rgb(0xC9, 0xC9, 0xCE)));
-                // set item width
-                openItem.setWidth(dp2px(80));
-                // set item title
-                openItem.setTitle("Open");
-                // set item title fontsize
-                openItem.setTitleSize(18);
-                // set item title font color
-                openItem.setTitleColor(Color.WHITE);
-                // add to menu
-                menu.addMenuItem(openItem);
-
-
-
-                // create "delete" item
-                SwipeMenuItem deleteItem = new SwipeMenuItem(getContext());
-                // set item background
-                deleteItem.setBackground(new ColorDrawable(Color.rgb(0xF9,0x3F, 0x25)));
-                // set item width
-                deleteItem.setWidth(dp2px(80));
-                // set a icon
-                deleteItem.setIcon(R.drawable.ic_delete);
-                // add to menu
-                menu.addMenuItem(deleteItem);
-            }
-        };
-    }
-
-
-    private int dp2px(int dp) {
-        return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp,
-                getContext().getResources().getDisplayMetrics());
-    }
+    */
 
 
 }
+

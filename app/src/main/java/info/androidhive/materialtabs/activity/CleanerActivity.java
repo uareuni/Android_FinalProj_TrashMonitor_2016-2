@@ -1,95 +1,99 @@
 package info.androidhive.materialtabs.activity;
 
+import android.content.Intent;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
-import android.support.design.widget.TabLayout;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
-import android.view.LayoutInflater;
-import android.widget.TextView;
+import android.view.View;
+import android.widget.ListView;
 
-import java.util.ArrayList;
-import java.util.List;
+import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.firebase.messaging.FirebaseMessaging;
 
 import info.androidhive.materialtabs.R;
-import info.androidhive.materialtabs.fragments.UserHistoryFragment;
-import info.androidhive.materialtabs.fragments.UserTrashFragment;
+import info.androidhive.materialtabs.db.BasicInfo;
+import info.androidhive.materialtabs.db.DBAdapter;
+import info.androidhive.materialtabs.db.ListDbHelper;
+import info.androidhive.materialtabs.db.ListItem;
+
 
 public class CleanerActivity extends AppCompatActivity {
 
-    private TabLayout tabLayout;
-    private ViewPager viewPager;
+    //public static final String DB_NAME = "TrashMonitor";
+
+    //public static final String CLEANER_TABLE_NAME = "CleanerTable";
+
+
+    ListDbHelper helper;
+    SQLiteDatabase db;
+    Cursor cursor;
+
+    ListView mListView;
+
+
+    static DBAdapter mAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_custom_view_icon_text_tabs);
+        setContentView(R.layout.cleaner_list);
 
-        viewPager = (ViewPager) findViewById(R.id.viewpager);
-        setupViewPager(viewPager);
+        mListView = (ListView) findViewById(R.id.cleanerListView);
 
-        tabLayout = (TabLayout) findViewById(R.id.tabs);
-        tabLayout.setupWithViewPager(viewPager);
-        setupTabIcons();
+// -------------------------------- db open하고 CursorAdapter 초기화 -------------------------------------
+        helper = new ListDbHelper(getApplicationContext(), BasicInfo.CLEANER_DB, null, 1);
+        db = helper.getWritableDatabase(); //db open!
+
+        /**
+         *  CursorAdapter의 인자로 보낼 Cursor객체.
+         */
+
+        // for testing - drop the table
+        // helper.dropTable(db, BasicInfo.CLEANER_TABLE);
+
+
+        helper.createTable(db, BasicInfo.CLEANER_TABLE);
+        cursor = db.rawQuery("SELECT * FROM " + BasicInfo.CLEANER_TABLE, null);
+
+        mAdapter = new DBAdapter(getApplicationContext(), cursor, true, BasicInfo.CLEANER_DB);
+// ----------------------------------------------------------------------------------------------------
+
+        // 4. listView에 adapter set
+        mListView.setAdapter(mAdapter); // SwipeMenuListView 객체를 사용합니다!
+
+        //추가한 라인
+        FirebaseMessaging.getInstance().subscribeToTopic("cleaner");
+        FirebaseInstanceId.getInstance().getToken();
+
     }
 
-    /**
-     * Adding custom view to tab
-     */
-    private void setupTabIcons() {
 
-        TextView tabOne = (TextView) LayoutInflater.from(this).inflate(R.layout.custom_tab, null);
-        tabOne.setText("ONE");
-        tabOne.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.ic_tab_favourite, 0, 0);
-        tabLayout.getTabAt(0).setCustomView(tabOne);
-
-        TextView tabTwo = (TextView) LayoutInflater.from(this).inflate(R.layout.custom_tab, null);
-        tabTwo.setText("TWO");
-        tabTwo.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.ic_tab_call, 0, 0);
-        tabLayout.getTabAt(1).setCustomView(tabTwo);
-
+    /////////////////////////////////////////////////////////////////////////////////////////
+    public static void setListData(String title, String address, String trash)
+    {
+        ListItem aItem = new ListItem(title, address, trash);
+        mAdapter.addItemToDb(aItem);
     }
 
-    /**
-     * Adding fragments to ViewPager
-     * @param viewPager
-     */
-    private void setupViewPager(ViewPager viewPager) {
-        ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager());
-        adapter.addFrag(new UserTrashFragment(), "ONE");
-        adapter.addFrag(new UserHistoryFragment(), "TWO");
-        viewPager.setAdapter(adapter);
+    /*
+    private void deleteAll()
+    {
+        mAdapter.removeAllItem();
+    }
+    */
+
+
+
+    // onclick
+    public void onCheckMapBtnClicked(View v)
+    {
+        Intent intent = new Intent(getApplicationContext(), CleanerMapActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(intent);
     }
 
-    class ViewPagerAdapter extends FragmentPagerAdapter {
-        private final List<Fragment> mFragmentList = new ArrayList<>();
-        private final List<String> mFragmentTitleList = new ArrayList<>();
 
-        public ViewPagerAdapter(FragmentManager manager) {
-            super(manager);
-        }
-
-        @Override
-        public Fragment getItem(int position) {
-            return mFragmentList.get(position);
-        }
-
-        @Override
-        public int getCount() {
-            return mFragmentList.size();
-        }
-
-        public void addFrag(Fragment fragment, String title) {
-            mFragmentList.add(fragment);
-            mFragmentTitleList.add(title);
-        }
-
-        @Override
-        public CharSequence getPageTitle(int position) {
-            return mFragmentTitleList.get(position);
-        }
-    }
 }

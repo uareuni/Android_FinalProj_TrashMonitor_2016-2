@@ -16,7 +16,8 @@
             app:layout_scrollFlags="scroll|enterAlways"
             app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
     </android.support.design.widget.AppBarLayout>
-    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
@@ -36,7 +37,8 @@
             android:textColor="#FFF"
             android:paddingLeft="0dp"
             android:drawablePadding="5dp"
-            android:textColorHint="#999"/>
+            android:textColorHint="#999"
+            android:text="test@test.com" />
 
         <EditText
             android:layout_width="match_parent"
@@ -50,7 +52,8 @@
             android:textColor="#FFF"
             android:paddingLeft="0dp"
             android:drawablePadding="5dp"
-            android:textColorHint="#999"/>
+            android:textColorHint="#999"
+            android:text="123456" />
 
         <LinearLayout
             android:layout_width="match_parent"

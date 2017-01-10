@@ -244,8 +244,16 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="upload"
-            android:id="@+id/uploadBtn"
+            android:onClick="onCheckMapBtnClicked"
+            android:id="@+id/addUsingContentProviderButton"
             android:layout_gravity="center_horizontal" />
     </LinearLayout>
+
+    <TextView
+        android:id="@+id/calendarList"
+
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:inputType="textMultiLine" />
 
 </LinearLayout>

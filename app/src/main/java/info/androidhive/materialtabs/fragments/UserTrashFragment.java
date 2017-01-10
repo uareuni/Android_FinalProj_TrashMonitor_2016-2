@@ -7,16 +7,28 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+
+import java.util.Calendar;
 
 import info.androidhive.materialtabs.R;
 
 
 public class UserTrashFragment extends Fragment implements View.OnClickListener
 {
+    public static final String TAG = "CalAdder";
+    Calendar mCal = Calendar.getInstance();
+
+    String title = "a";
+
     TextView textTotal;
     TextView text100L;
     TextView text50L;
     TextView text10L;
+    TextView calendarlist;
 
     Button plus100L;
     Button plus50L;
@@ -26,7 +38,7 @@ public class UserTrashFragment extends Fragment implements View.OnClickListener
     Button minus50L;
     Button minus10L;
 
-    Button uploadBtn;
+    Button addUsingContentProviderButton;
 
     private int count100L;
     private int count50L;
@@ -47,7 +59,8 @@ public class UserTrashFragment extends Fragment implements View.OnClickListener
         //View view = inflater.inflate(R.layout.user_trash, container, false);
         View view = inflater.inflate(R.layout.user_trash, null);
 
-        uploadBtn = (Button) view.findViewById(R.id.uploadBtn);
+        addUsingContentProviderButton = (Button) view.findViewById(R.id.addUsingContentProviderButton);
+        calendarlist = (TextView) view.findViewById(R.id.calendarList);
 
         textTotal = (TextView) view.findViewById(R.id.textTotal);
         text100L = (TextView) view.findViewById(R.id.text100L);
@@ -61,7 +74,7 @@ public class UserTrashFragment extends Fragment implements View.OnClickListener
         minus50L = (Button) view.findViewById(R.id.minus50L);
         minus10L = (Button) view.findViewById(R.id.minus10L);
 
-        uploadBtn.setOnClickListener(this);
+        addUsingContentProviderButton.setOnClickListener(this);
 
         plus100L.setOnClickListener(this);
         plus50L.setOnClickListener(this);
@@ -81,6 +94,18 @@ public class UserTrashFragment extends Fragment implements View.OnClickListener
 
     @Override
     public void onClick(View v) {
+
+
+        final Calendar c = Calendar.getInstance();
+
+        c.set(Calendar.YEAR, c.get(Calendar.YEAR));
+        c.set(Calendar.MONTH, c.get(Calendar.MONTH));
+        c.set(Calendar.DAY_OF_MONTH, c.get(Calendar.DAY_OF_MONTH));
+
+        final Calendar d = Calendar.getInstance();
+        d.setTimeInMillis(c.getTimeInMillis());
+        d.roll(Calendar.HOUR, +0);
+
         switch (v.getId())
         {
             case R.id.plus100L : text100L.setText("" + (++count100L)); break;
@@ -106,14 +131,50 @@ public class UserTrashFragment extends Fragment implements View.OnClickListener
                 }
                 break;
 
-            case R.id.uploadBtn :
-                if((count10L != 0) || (count50L != 0) || (count100L != 0))
-                {
-                    UserHistoryFragment.setListData("title", "1");
+
+
+            case R.id.addUsingContentProviderButton:
+
+                try {
+
+                    /**
+                     *  1. Google Calender에 set
+                     */
+                    String packageName = getClass().getPackage().getName();
+                    EventAdder eventAdder = (EventAdder)Class.forName(packageName + ".AddUsingContentProvider").newInstance();
+                    title = textTotal.getText().toString() ;
+                    eventAdder.addEvent(getActivity(), title, c, d);
+
+                    /**
+                     *  2. UserHistory에 add(+ SQL DB에도 set)
+                     */
+                    if((count10L != 0) || (count50L != 0) || (count100L != 0))
+                    {
+                        String temp;
+                        UserHistoryFragment.setListData("A1", "장성동 153-12번지", title);
+                        temp = "A1," + "장성동 153-12번지," + title;
+                        try{
+                            sendNotificationToCleaners(temp);
+                        } catch(Exception ex){
+                            ex.printStackTrace();
+                        }
+                    }
+
+                } catch (Exception e) {
+                    Toast.makeText(getActivity(), "Can't load AddUsingContentProvider: " + e, Toast.LENGTH_LONG).show();
                 }
                 break;
+
         }
 
         textTotal.setText("" + getTotal());
+    }
+
+    public static void sendNotificationToCleaners(final String message) {
+
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference myRef = database.getReference("notificationRequests");
+        myRef.setValue(message);
+
     }
 }

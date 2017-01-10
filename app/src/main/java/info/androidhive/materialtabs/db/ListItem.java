@@ -2,17 +2,17 @@ package info.androidhive.materialtabs.db;
 
 /**
  * Created by KBPark on 2016. 8. 13..
- */
-public class ListItem
+ */public class ListItem
 {
-    private static final int NUM_OF_DATA = 2;
+    private static final int NUM_OF_DATA = 3;
 
     Object[] mData = new Object[NUM_OF_DATA];
 
-    public ListItem(String title, String date)
+    public ListItem(String title, String address, String trash)
     {
         mData[0] = title;
-        mData[1] = date;
+        mData[1] = address;
+        mData[2] = trash;
     }
 
     public Object getTitle()
@@ -20,9 +20,14 @@ public class ListItem
         return mData[0];
     }
 
-    public Object getDate()
+    public Object getAddress()
     {
         return mData[1];
+    }
+
+    public Object getTrash()
+    {
+        return mData[2];
     }
 
     public Object[] getData()

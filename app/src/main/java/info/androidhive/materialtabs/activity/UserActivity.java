@@ -1,8 +1,5 @@
 package info.androidhive.materialtabs.activity;
 
-import android.database.sqlite.SQLiteDatabase;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
@@ -10,28 +7,38 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
-import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 
-import com.baoyz.swipemenulistview.SwipeMenu;
-import com.baoyz.swipemenulistview.SwipeMenuCreator;
-import com.baoyz.swipemenulistview.SwipeMenuItem;
-import com.baoyz.swipemenulistview.SwipeMenuListView;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.firebase.messaging.FirebaseMessaging;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 import info.androidhive.materialtabs.R;
-import info.androidhive.materialtabs.db.DBAdapter;
-import info.androidhive.materialtabs.db.ListDbHelper;
-import info.androidhive.materialtabs.db.ListItem;
 import info.androidhive.materialtabs.fragments.UserHistoryFragment;
 import info.androidhive.materialtabs.fragments.UserTrashFragment;
 
+
 public class UserActivity extends AppCompatActivity {
+
+    // content Provider
+    public static final String TAG = "CalAdder";
+    Calendar mCal = Calendar.getInstance();
+    private EditText string_title;
+
+    String location = "Boardroom";
+    int duration = 1;	// hours
+
+
+    Button addUsingContentProvider;
 
     //---------- UserActivity -----------//
     private TabLayout tabLayout;
@@ -47,22 +54,19 @@ public class UserActivity extends AppCompatActivity {
     private int count10L;
 
 
-
-
-
-
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState)
+    {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_custom_view_icon_text_tabs);
 
         viewPager = (ViewPager) findViewById(R.id.viewpager);
         setupViewPager(viewPager);
 
-                textTotal = (TextView) findViewById(R.id.textTotal);
-                text100L = (TextView) findViewById(R.id.text100L);
-                text50L = (TextView) findViewById(R.id.text50L);
-                text10L = (TextView) findViewById(R.id.text10L);
+        textTotal = (TextView) findViewById(R.id.textTotal);
+        text100L = (TextView) findViewById(R.id.text100L);
+        text50L = (TextView) findViewById(R.id.text50L);
+        text10L = (TextView) findViewById(R.id.text10L);
 
         tabLayout = (TabLayout) findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(viewPager);
@@ -146,13 +150,6 @@ public class UserActivity extends AppCompatActivity {
 
 
 
-
-
-
-
-
-
-
     class ViewPagerAdapter extends FragmentPagerAdapter {
         private final List<Fragment> mFragmentList = new ArrayList<>();
         private final List<String> mFragmentTitleList = new ArrayList<>();
@@ -171,7 +168,8 @@ public class UserActivity extends AppCompatActivity {
             return mFragmentList.size();
         }
 
-        public void addFrag(Fragment fragment, String title) {
+        public void addFrag(Fragment fragment, String title)
+        {
             mFragmentList.add(fragment);
             mFragmentTitleList.add(title);
         }

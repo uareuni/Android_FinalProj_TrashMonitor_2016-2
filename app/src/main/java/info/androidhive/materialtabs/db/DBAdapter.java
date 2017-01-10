@@ -14,22 +14,21 @@ import info.androidhive.materialtabs.R;
 
 /**
  * Created by KBPark on 2016. 8. 13..
- */
-public class DBAdapter extends CursorAdapter
+ */public class DBAdapter extends CursorAdapter
 {
 
     SQLiteDatabase db;
     ListDbHelper helper;
 
     TextView titleView;
-    TextView dateView;
+    TextView addressView;
+    TextView trashView;
 
-
-    public DBAdapter(Context context, Cursor c, boolean autoRequery)
+    public DBAdapter(Context context, Cursor c, boolean autoRequery, String db_name)
     {
         super(context, c, autoRequery);
 
-        helper = new ListDbHelper(context, BasicInfo.DB_NAME, null, 1);
+        helper = new ListDbHelper(context, db_name, null, 1);
         db = helper.getWritableDatabase(); // db open!
     }
 
@@ -40,7 +39,8 @@ public class DBAdapter extends CursorAdapter
     public void bindView(View view, Context context, Cursor cursor)
     {
         titleView.setText(cursor.getString(cursor.getColumnIndex("title")));
-        dateView.setText(cursor.getString(cursor.getColumnIndex("date")));
+        addressView.setText(cursor.getString(cursor.getColumnIndex("address")));
+        trashView.setText(cursor.getString(cursor.getColumnIndex("trash")));
     }
 
     // 여기서는 layout관련 일을 주로 합니다.
@@ -51,7 +51,8 @@ public class DBAdapter extends CursorAdapter
         View itemlayout = inflater.inflate(R.layout.item_view, null, true);
 
         titleView = (TextView) itemlayout.findViewById(R.id.title);
-        dateView = (TextView) itemlayout.findViewById(R.id.date);
+        addressView = (TextView) itemlayout.findViewById(R.id.address);
+        trashView = (TextView) itemlayout.findViewById(R.id.trash);
 
         return itemlayout;
     }
@@ -59,32 +60,31 @@ public class DBAdapter extends CursorAdapter
 
 //------------------------------------------ 내가 정의한 메소드들 ------------------------------------------------
 
-    // db에 바로 추가!
+    // User db에 바로 추가!
     public void addItemToDb(ListItem item)
     {
         // db에 item추가!
         if(db != null)
         {
-            helper.insertRec(db, (String)item.getTitle(), (String)item.getDate()); // 해당 record에 data 추가!
+            helper.insertRec(db, BasicInfo.USER_TABLE, (String)item.getTitle(), (String)item.getAddress(), (String)item.getTrash()); // 해당 record에 data 추가!
             this.getCursor().requery(); // CursorAdapter의 listView 갱신코드!
-
         }else{
             Log.d("test", "db open 안됨");
         }
     }
 
-    public void removeItem(int position)
+    /*
+    public void removeItem(int position, String table_name)
     {
-        /**
-         *  받아온 position을 근거로, db의 '_id'값을 알아내서 그걸로 deletedRec()를 call해야 한다!
-         *  -> ListView에서의 position과 Cursor의 position은 어짜피 동일하다(0부터 채워나간다)는 점을 이용.
-         */
+        //
+        //  받아온 position을 근거로, db의 '_id'값을 알아내서 그걸로 deletedRec()를 call해야 한다!
+        //  -> ListView에서의 position과 Cursor의 position은 어짜피 동일하다(0부터 채워나간다)는 점을 이용.
+        //
 
-        Cursor cursor = db.rawQuery("SELECT _id FROM " + BasicInfo.TABLE_NAME, null); // 1) _id 필드를 다 찾아온 다음에
+        Cursor cursor = db.rawQuery("SELECT _id FROM " + table_name, null); // 1) _id 필드를 다 찾아온 다음에
         cursor.moveToPosition(position); // 2) 해당 pisition으로 cursor를 이동시킨 후 - position은 listView에서 몇번째 position에 있는지 알려주는 변수다.
         int index = cursor.getInt(cursor.getColumnIndex("_id")); // 3) '_id'값을 빼온다.
         cursor.close();
-        // 위에 4줄 이해할 수 있어야되!
 
 
         // db에서 item삭제!
@@ -98,11 +98,14 @@ public class DBAdapter extends CursorAdapter
         }
 
     }
+    */
 
+    /*
     public void removeAllItem()
     {
         helper.deleteAllRec(db);
         this.getCursor().requery(); // CursorAdapter의 listView 갱신코드!
     }
+    */
 
 }
