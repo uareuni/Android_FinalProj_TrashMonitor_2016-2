@@ -1,7 +1,7 @@
 <b><h1>< Android Trash Monitoring App Demo. ></h1></b> 
 <br/>
 Develop period : 2016. 11. 25 ~ 2016. 12. 3 <br />
-Team member : WH Lee, IH Choi, KB Park <br />
+Team member : Won Hee Lee, In Hoi Choi, Kyeoung Bae Park <br />
 
 Purpose : <b>Creating a efficient path for the garbage trucks</b> <br />
 
